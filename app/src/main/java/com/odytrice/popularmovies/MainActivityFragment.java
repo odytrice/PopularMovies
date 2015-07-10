@@ -6,11 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.odytrice.popularmovies.adapters.MovieTilesAdapter;
 import com.odytrice.popularmovies.models.Movie;
+import com.odytrice.popularmovies.tasks.FetchMoviesTask;
+import com.odytrice.popularmovies.tasks.Action;
 
-import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -18,28 +21,36 @@ import java.util.Arrays;
  */
 public class MainActivityFragment extends Fragment {
 
-    MovieTilesAdapter mMovieAdapter;
+    MovieTilesAdapter _movieAdapter;
+
+    List<Movie> _movies;
 
     public MainActivityFragment() {
+
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         GridView gridView = (GridView) rootView.findViewById(R.id.movieTiles);
+        _movieAdapter = new MovieTilesAdapter(getActivity(), _movies);
+        gridView.setAdapter(_movieAdapter);
 
-        Movie[] movies = {
-                new Movie(1, "http://i.imgur.com/DvpvklR.png"),
-                new Movie(2, "http://i.imgur.com/DvpvklR.png")
-        };
+        FetchMoviesTask fetchTask = new FetchMoviesTask(new Action<List<Movie>>() {
+            @Override
+            public void Invoke(List<Movie> result) {
+                if (result != null) {
+                    _movies.clear();
+                    _movies.addAll(result);
+                    _movieAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(getActivity(), "An Error Occured Retrieving Data", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
-
-        mMovieAdapter = new MovieTilesAdapter(getActivity(), Arrays.asList(movies));
-
-        gridView.setAdapter(mMovieAdapter);
-
+        fetchTask.execute();
         return rootView;
     }
 }
