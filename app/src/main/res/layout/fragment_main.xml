@@ -4,15 +4,17 @@
     android:layout_height="match_parent"
     tools:context=".MainActivityFragment">
 
-    <GridView
+    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/movieTiles"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:columnWidth="150dp"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="0dp"
-        android:horizontalSpacing="0dp"
-        android:stretchMode="columnWidth"
-        android:gravity="center" />
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:padding="@dimen/grid_padding"
+        android:verticalSpacing="@dimen/grid_vertical_spacing"
+        android:horizontalSpacing="@dimen/grid_horizontal_spacing"
 
+        android:scrollingCache="true"
+        android:alwaysDrawnWithCache="true"
+        android:smoothScrollbar="true"
+        android:numColumns="auto_fit"
+        />
 </FrameLayout>

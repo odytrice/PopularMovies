@@ -5,6 +5,7 @@ import android.media.Image;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.odytrice.popularmovies.R;
@@ -26,27 +27,26 @@ public class MovieTilesAdapter extends ArrayAdapter<Movie> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        SquaredImageView imageView;
-
+        ImageView imageView;
         if (convertView == null) {
-            //Get Movie at Position
-            if (position < 0 || position >= mMovies.size()) return null;
-            Movie movie = mMovies.get(position);
-
-            imageView = new SquaredImageView(getContext());
-
-            imageView.setPadding(0,0,0,0);
-
-            Picasso.with(getContext())
-                    .load(movie.imageUrl)
-                    .placeholder(R.mipmap.placeholder)
-                    .error(R.mipmap.placeholder_error)
-                    .fit()
-                    .centerCrop()
-                    .into(imageView);
+            imageView = new ImageView(getContext());
+            imageView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 820));
+            imageView.setPadding(0, 0, 0, 0);
         } else {
-            imageView = (SquaredImageView) convertView;
+            imageView = (ImageView) convertView;
         }
+
+        //Get Movie at Position
+        if (position < 0 || position >= mMovies.size()) return null;
+        Movie movie = mMovies.get(position);
+
+        Picasso.with(getContext())
+                .load(movie.poster_path)
+                .placeholder(R.mipmap.placeholder)
+                .error(R.mipmap.placeholder_error)
+                .fit()
+                .centerCrop()
+                .into(imageView);
         return imageView;
     }
 }

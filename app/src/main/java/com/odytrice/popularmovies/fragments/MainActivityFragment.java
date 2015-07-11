@@ -1,4 +1,4 @@
-package com.odytrice.popularmovies;
+package com.odytrice.popularmovies.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.odytrice.popularmovies.R;
 import com.odytrice.popularmovies.adapters.MovieTilesAdapter;
 import com.odytrice.popularmovies.models.Movie;
 import com.odytrice.popularmovies.tasks.FetchMoviesTask;
 import com.odytrice.popularmovies.tasks.Action;
+import com.odytrice.popularmovies.utils.PreferenceUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,7 +29,7 @@ public class MainActivityFragment extends Fragment {
     List<Movie> _movies;
 
     public MainActivityFragment() {
-
+        _movies = new ArrayList<>();
     }
 
     @Override
@@ -36,8 +39,20 @@ public class MainActivityFragment extends Fragment {
         GridView gridView = (GridView) rootView.findViewById(R.id.movieTiles);
         _movieAdapter = new MovieTilesAdapter(getActivity(), _movies);
         gridView.setAdapter(_movieAdapter);
+        return rootView;
+    }
 
-        FetchMoviesTask fetchTask = new FetchMoviesTask(new Action<List<Movie>>() {
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateMovies();
+    }
+
+    private void updateMovies() {
+
+        String sortOrder = PreferenceUtils.getSortOrder(getActivity());
+
+        FetchMoviesTask fetchTask = new FetchMoviesTask(sortOrder, new Action<List<Movie>>() {
             @Override
             public void Invoke(List<Movie> result) {
                 if (result != null) {
@@ -45,12 +60,10 @@ public class MainActivityFragment extends Fragment {
                     _movies.addAll(result);
                     _movieAdapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(getActivity(), "An Error Occured Retrieving Data", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.fetch_error, Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
         fetchTask.execute();
-        return rootView;
     }
 }

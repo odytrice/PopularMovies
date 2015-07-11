@@ -1,9 +1,13 @@
-package com.odytrice.popularmovies;
+package com.odytrice.popularmovies.activities;
 
+import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.odytrice.popularmovies.R;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -11,6 +15,8 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Instructs Android to Set Default Values if they did not exist
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         setContentView(R.layout.activity_main);
     }
 
@@ -31,6 +37,8 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 
