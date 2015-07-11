@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.odytrice.popularmovies.models.Movie;
+import com.odytrice.popularmovies.utils.DateTimeUtility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,9 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class FetchMoviesTask extends AsyncTask<Void, Void, List<Movie>> {
@@ -71,7 +70,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, List<Movie>> {
 
         List<Movie> movies = new ArrayList<>();
 
-        final String POSTER_URL_PATH = "http://image.tmdb.org/t/p/w342/";
+        final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w185/";
 
         JSONObject response = new JSONObject(jsonString);
 
@@ -86,8 +85,8 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, List<Movie>> {
             movie.original_language = movieJson.getString("original_language");
             movie.original_title = movieJson.getString("original_title");
             movie.overview = movieJson.getString("overview");
-            movie.release_date = parseDate(movieJson.getString("release_date"));
-            movie.poster_path = POSTER_URL_PATH + movieJson.getString("poster_path");
+            movie.release_date = DateTimeUtility.parseDate(movieJson.getString("release_date"));
+            movie.poster_url = BASE_IMAGE_URL + movieJson.getString("poster_path");
             movie.popularity = movieJson.getDouble("popularity");
             movie.title = movieJson.getString("title");
             movie.video = movieJson.getBoolean("video");
@@ -96,20 +95,10 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, List<Movie>> {
             movie.genre_ids = parseJsonIDs(movieJson.getJSONArray("genre_ids"));
             movies.add(movie);
         }
-
         return movies;
     }
 
-    private Date parseDate(String dateString) {
-        Date date = new Date();
-        try {
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            date = formatter.parse(dateString);
-        }catch (ParseException pex){
 
-        }
-        return date;
-    }
 
     private int[] parseJsonIDs(JSONArray genre_ids) throws JSONException {
         int[] ints = new int[genre_ids.length()];

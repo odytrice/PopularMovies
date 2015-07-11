@@ -4,7 +4,11 @@
     <string name="action_settings">Settings</string>
     <string name="fetch_error">An Error Occurred Retrieving Data</string>
 
+    <string name="title_activity_detail">Movie Detail</string>
+
     <string name="pref_movie_sort_default" translatable="no">popularity</string>
     <string name="pref_movie_sort_label">Sort Movies by</string>
     <string name="pref_movie_sort_key" translatable="no">sort_order</string>
+    <string name="txt_released">Released</string>
+    <string name="txt_average_votes">Average Votes</string>
 </resources>

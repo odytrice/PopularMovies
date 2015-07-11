@@ -1,0 +1,24 @@
+package com.odytrice.popularmovies.utils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class DateTimeUtility {
+    public static Date parseDate(String dateString) {
+        Date date = new Date();
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            date = formatter.parse(dateString);
+        } catch (ParseException pex) {
+
+        }
+        return date;
+    }
+
+    public static String formatDate(Date date) {
+        if (date == null) return null;
+        SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy");
+        return formatter.format(date);
+    }
+}

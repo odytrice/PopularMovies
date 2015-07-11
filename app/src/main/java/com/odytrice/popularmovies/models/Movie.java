@@ -1,8 +1,9 @@
 package com.odytrice.popularmovies.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Movie {
+public class Movie implements Serializable {
     public int id;
     public boolean adult;
     public String backdrop_path;
@@ -11,7 +12,7 @@ public class Movie {
     public String original_title;
     public String overview;
     public Date release_date;
-    public String poster_path;
+    public String poster_url;
     public double popularity;
     public String title;
     public boolean video;

@@ -3,8 +3,18 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="grid_cell_gap">0dp</dimen>
+    <dimen name="grid_cell_height">400dp</dimen>
+
     <dimen name="grid_padding">0dp</dimen>
     <dimen name="grid_vertical_spacing">0dp</dimen>
     <dimen name="grid_horizontal_spacing">0dp</dimen>
     <dimen name="grid_column_width">150dp</dimen>
+    <dimen name="hero_text">40dp</dimen>
+    <dimen name="hero_padding">20dp</dimen>
+
+    <dimen name="poster_width">150dp</dimen>
+    <dimen name="poster_height">225dp</dimen>
+
+    <dimen name="textview_padding">10dp</dimen>
+    <dimen name="textview_summary_padding">20dp</dimen>
 </resources>

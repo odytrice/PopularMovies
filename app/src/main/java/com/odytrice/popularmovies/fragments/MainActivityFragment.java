@@ -1,14 +1,17 @@
 package com.odytrice.popularmovies.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
 import com.odytrice.popularmovies.R;
+import com.odytrice.popularmovies.activities.DetailActivity;
 import com.odytrice.popularmovies.adapters.MovieTilesAdapter;
 import com.odytrice.popularmovies.models.Movie;
 import com.odytrice.popularmovies.tasks.FetchMoviesTask;
@@ -39,6 +42,17 @@ public class MainActivityFragment extends Fragment {
         GridView gridView = (GridView) rootView.findViewById(R.id.movieTiles);
         _movieAdapter = new MovieTilesAdapter(getActivity(), _movies);
         gridView.setAdapter(_movieAdapter);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Movie movie = _movies.get(position);
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra("Movie", movie);
+                startActivity(intent);
+            }
+        });
+
         return rootView;
     }
 
