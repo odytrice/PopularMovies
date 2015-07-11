@@ -27,12 +27,9 @@ public class MovieTilesAdapter extends ArrayAdapter<Movie> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        int gridCellHeight = (int)getContext().getResources().getDimension(R.dimen.grid_cell_height);
-
         TileImageView imageView;
         if (convertView == null) {
             imageView = new TileImageView(getContext());
-            //imageView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT,gridCellHeight));
             imageView.setPadding(0, 0, 0, 0);
         } else {
             imageView = (TileImageView) convertView;
@@ -44,8 +41,8 @@ public class MovieTilesAdapter extends ArrayAdapter<Movie> {
 
         Picasso.with(getContext())
                 .load(movie.poster_url)
-                .placeholder(R.mipmap.placeholder)
-                .error(R.mipmap.placeholder_error)
+                .placeholder(R.mipmap.loader)
+                .error(R.mipmap.loader_error)
                 .fit()
                 .centerCrop()
                 .into(imageView);

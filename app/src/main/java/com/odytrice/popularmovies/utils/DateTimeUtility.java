@@ -18,7 +18,7 @@ public class DateTimeUtility {
 
     public static String formatDate(Date date) {
         if (date == null) return null;
-        SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("d MMMM yyyy");
         return formatter.format(date);
     }
 }

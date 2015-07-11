@@ -54,8 +54,8 @@ public class DetailActivityFragment extends Fragment {
             ImageView imageView = (ImageView)root.findViewById(R.id.img_movie_poster);
             Picasso.with(getActivity())
                     .load(movie.poster_url)
-                    .placeholder(R.mipmap.placeholder)
-                    .error(R.mipmap.placeholder_error)
+                    .placeholder(R.mipmap.loader)
+                    .error(R.mipmap.loader_error)
                     .fit()
                     .centerCrop()
                     .into(imageView);
