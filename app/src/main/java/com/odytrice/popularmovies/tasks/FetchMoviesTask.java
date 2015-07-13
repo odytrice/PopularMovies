@@ -44,8 +44,14 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, List<Movie>> {
             urlConnection = (HttpURLConnection) url.openConnection();
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             return parseMoviesFromJson(ReadStream(in));
-        } catch (Exception ex) {
-            Log.e(FetchMoviesTask.class.toString(), "Error Fetching Data: " + ex.getMessage());
+        } catch (MalformedURLException e) {
+            Log.e(FetchMoviesTask.class.toString(), "Error Malformed Url: " + e.getMessage());
+        } catch (ParseException e) {
+            Log.e(FetchMoviesTask.class.toString(), "Error Parsing Json Data: " + e.getMessage());
+        } catch (JSONException e) {
+            Log.e(FetchMoviesTask.class.toString(), "Error Parsing Json Data: " + e.getMessage());
+        } catch (IOException e) {
+            Log.e(FetchMoviesTask.class.toString(), "Network Error: " + e.getMessage());
         } finally {
             if (urlConnection != null)
                 urlConnection.disconnect();

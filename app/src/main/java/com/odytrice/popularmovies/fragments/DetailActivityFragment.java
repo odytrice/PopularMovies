@@ -29,7 +29,7 @@ public class DetailActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         //Get Movie Information
-        Object extraObject = getActivity().getIntent().getSerializableExtra("Movie");
+        Object extraObject = getActivity().getIntent().getParcelableExtra("Movie");
         if (extraObject instanceof Movie) {
             _movie = (Movie) extraObject;
         }
