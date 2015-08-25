@@ -1,12 +1,17 @@
 package com.odytrice.popularmovies.tasks;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 
+import com.odytrice.popularmovies.data.MoviesContract;
 import com.odytrice.popularmovies.models.Movie;
 import com.odytrice.popularmovies.utils.DateTimeUtility;
+import com.odytrice.popularmovies.utils.PreferenceUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,30 +25,33 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Array;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
-public class FetchMoviesTask extends AsyncTask<Void, Void, List<Movie>> {
-    private Action<List<Movie>> _result;
+public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
+    private Action<Void> _result;
     private final static String API_KEY = "4d3c9166c993a76b9b5ed64ca04e8ce4";
 
-    private String _sortOrder;
+    private Context _context;
 
-    public FetchMoviesTask(String sortOrder, Action<List<Movie>> result) {
-        _sortOrder = sortOrder;
+    public FetchMoviesTask(Context context, Action<Void> result) {
+        _context = context;
         _result = result;
     }
 
     @Override
-    protected List<Movie> doInBackground(Void... params) {
+    protected Void doInBackground(Void... params) {
         //TODO: Call Background Service and Return Movies
         HttpURLConnection urlConnection = null;
         try {
             URL url = buildUrl();
             urlConnection = (HttpURLConnection) url.openConnection();
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            return parseMoviesFromJson(ReadStream(in));
+            List<Movie> movies = parseMoviesFromJson(ReadStream(in));
+            SaveMovies(movies);
         } catch (MalformedURLException e) {
             Log.e(FetchMoviesTask.class.toString(), "Error Malformed Url: " + e.getMessage());
         } catch (ParseException e) {
@@ -59,24 +67,45 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, List<Movie>> {
         return null;
     }
 
+    private void SaveMovies(List<Movie> movies) {
+        //TODO: Save Movies to the Database
+        Vector<ContentValues> cvVector = new Vector<>();
+        for (Movie movie : movies) {
+            cvVector.add(movie.toContentValues());
+        }
+
+        ContentValues[] cvArray = new ContentValues[cvVector.size()];
+        cvVector.toArray(cvArray);
+        _context.getContentResolver().bulkInsert(MoviesContract.MoviesEntry.getMoviesUri(), cvArray);
+    }
+
     @NonNull
     private URL buildUrl() throws MalformedURLException {
 
         String movieApiUrl = "http://api.themoviedb.org/3/discover/movie";
 
+        String sort_order = PreferenceUtils.getSortOrder(_context);
+
         Uri builtUri = Uri.parse(movieApiUrl).buildUpon()
-                .appendQueryParameter("sort_by", _sortOrder + ".desc")
+                .appendQueryParameter("sort_by", sort_order + ".desc")
                 .appendQueryParameter("api_key", API_KEY)
                 .build();
 
         return new URL(builtUri.toString());
     }
 
+    @Override
+    protected void onPostExecute(Void aVoid) {
+        _result.Invoke(aVoid);
+    }
+
     private List<Movie> parseMoviesFromJson(String jsonString) throws JSONException, ParseException {
 
         List<Movie> movies = new ArrayList<>();
 
-        final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w185/";
+        String[] sizes = new String[]{"w92", "w154", "w185", "w342", "w500", "w780", "original"};
+
+        final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/" + sizes[3] + "/";
 
         JSONObject response = new JSONObject(jsonString);
 
@@ -87,8 +116,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, List<Movie>> {
             JSONObject movieJson = results.getJSONObject(i);
             movie.adult = movieJson.getBoolean("adult");
             movie.backdrop_path = movieJson.getString("backdrop_path");
-            movie.id = movieJson.getInt("id");
-            movie.original_language = movieJson.getString("original_language");
+            movie.movie_id = movieJson.getInt("id");
             movie.original_title = movieJson.getString("original_title");
             movie.overview = movieJson.getString("overview");
             movie.release_date = DateTimeUtility.parseDate(movieJson.getString("release_date"));
@@ -98,12 +126,10 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, List<Movie>> {
             movie.video = movieJson.getBoolean("video");
             movie.vote_average = movieJson.getDouble("vote_average");
             movie.vote_count = movieJson.getInt("vote_count");
-            movie.genre_ids = parseJsonIDs(movieJson.getJSONArray("genre_ids"));
             movies.add(movie);
         }
         return movies;
     }
-
 
 
     private int[] parseJsonIDs(JSONArray genre_ids) throws JSONException {
@@ -122,10 +148,5 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, List<Movie>> {
             builder.append(line);
         }
         return builder.toString();
-    }
-
-    @Override
-    protected void onPostExecute(List<Movie> movies) {
-        _result.Invoke(movies);
     }
 }

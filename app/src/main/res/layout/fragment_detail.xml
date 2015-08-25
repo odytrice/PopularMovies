@@ -51,6 +51,12 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/textview_padding"
                     tools:text="Average Votes 4.7" />
+                <TextView
+                    android:id="@+id/txt_popularity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/textview_padding"
+                    tools:text="Average Votes 4.7" />
             </LinearLayout>
         </LinearLayout>
 

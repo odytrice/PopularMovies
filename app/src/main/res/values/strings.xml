@@ -11,4 +11,7 @@
     <string name="pref_movie_sort_key" translatable="no">sort_order</string>
     <string name="txt_released">Released</string>
     <string name="txt_average_votes">Average Votes</string>
+
+    <string name="content_authority">com.odytrice.popularmovies</string>
+    <string name="txt_popularity">Popularity</string>
 </resources>

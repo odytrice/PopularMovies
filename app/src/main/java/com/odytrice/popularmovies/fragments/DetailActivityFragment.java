@@ -13,6 +13,8 @@ import com.odytrice.popularmovies.models.Movie;
 import com.odytrice.popularmovies.utils.DateTimeUtility;
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Text;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -31,7 +33,7 @@ public class DetailActivityFragment extends Fragment {
         //Get Movie Information
         Object extraObject = getActivity().getIntent().getParcelableExtra("Movie");
         if (extraObject instanceof Movie) {
-            _movie = (Movie) extraObject;
+            _movie   = (Movie) extraObject;
         }
 
         UpdateUI(rootView,_movie);
@@ -43,10 +45,13 @@ public class DetailActivityFragment extends Fragment {
             ((TextView)root.findViewById(R.id.txt_movie_title)).setText(movie.title);
 
             String averageVotes = getString(R.string.txt_average_votes) + " " + movie.vote_average;
+            String releasedString = getString(R.string.txt_released) + " " + DateTimeUtility.formatDate(movie.release_date);
+            String popularity = getString(R.string.txt_popularity) + " " + Math.round(movie.popularity * 100.0) / 100.0;
 
-            ((TextView)root.findViewById(R.id.txt_movie_average)).setText(String.valueOf(averageVotes));
 
-            String releasedString = getString(R.string.txt_released) + " " +DateTimeUtility.formatDate(movie.release_date);
+            ((TextView)root.findViewById(R.id.txt_movie_average)).setText(averageVotes);
+            ((TextView)root.findViewById(R.id.txt_popularity)).setText(popularity);
+
 
             ((TextView)root.findViewById(R.id.txt_movie_release)).setText(releasedString);
             ((TextView)root.findViewById(R.id.txt_movie_summary)).setText(movie.overview);

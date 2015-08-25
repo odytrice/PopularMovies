@@ -3,9 +3,6 @@ package com.odytrice.popularmovies.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by Ody on 7/13/2015.
- */
 public class Setting implements Parcelable {
     public String sort_order;
     public Setting(String sort_order){
