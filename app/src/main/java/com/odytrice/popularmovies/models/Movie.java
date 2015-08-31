@@ -72,6 +72,7 @@ public class Movie implements Parcelable {
         original_title = in.readString();
         overview = in.readString();
         poster_url = in.readString();
+        release_date = DateTimeUtility.parseDate(in.readString());
         popularity = in.readDouble();
         title = in.readString();
         vote_average = in.readDouble();
@@ -121,6 +122,7 @@ public class Movie implements Parcelable {
         dest.writeString(original_title);
         dest.writeString(overview);
         dest.writeString(poster_url);
+        dest.writeString( DateTimeUtility.formatDate(release_date));
         dest.writeDouble(popularity);
         dest.writeString(title);
         dest.writeDouble(vote_average);
@@ -136,6 +138,7 @@ public class Movie implements Parcelable {
         contentValues.put(MoviesContract.MoviesEntry.Columns.Overview, overview);
         contentValues.put(MoviesContract.MoviesEntry.Columns.PosterUrl, poster_url);
         contentValues.put(MoviesContract.MoviesEntry.Columns.Popularity, popularity);
+        contentValues.put(MoviesContract.MoviesEntry.Columns.ReleaseDate, DateTimeUtility.formatDate(release_date));
         contentValues.put(MoviesContract.MoviesEntry.Columns.Title, title);
         contentValues.put(MoviesContract.MoviesEntry.Columns.VoteAverage, vote_average);
         contentValues.put(MoviesContract.MoviesEntry.Columns.VoteCount, vote_count);

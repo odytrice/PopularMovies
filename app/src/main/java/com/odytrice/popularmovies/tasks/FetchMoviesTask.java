@@ -2,8 +2,14 @@ package com.odytrice.popularmovies.tasks;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Path;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -18,7 +24,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -51,6 +62,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
             urlConnection = (HttpURLConnection) url.openConnection();
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             List<Movie> movies = parseMoviesFromJson(ReadStream(in));
+            FetchImages(movies, 3);
             SaveMovies(movies);
         } catch (MalformedURLException e) {
             Log.e(FetchMoviesTask.class.toString(), "Error Malformed Url: " + e.getMessage());
@@ -65,6 +77,66 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
                 urlConnection.disconnect();
         }
         return null;
+    }
+
+    private void FetchImages(List<Movie> movies, int index) {
+        for (Movie movie : movies) {
+            //Download Image File
+            String[] sizes = new String[]{"w92", "w154", "w185", "w342", "w500", "w780", "original"};
+            final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/" + sizes[index] + "/";
+            Bitmap image = downloadImage(BASE_IMAGE_URL + movie.poster_url);
+            saveImage(movie.poster_url, image);
+        }
+    }
+
+    private Bitmap downloadImage(String _url) {
+        //Prepare to download image
+        URL url;
+        InputStream in;
+        BufferedInputStream buf;
+
+        try {
+            url = new URL(_url);
+            in = url.openStream();
+            // Read the inputstream
+            buf = new BufferedInputStream(in);
+            // Convert the BufferedInputStream to a Bitmap
+            Bitmap bMap = BitmapFactory.decodeStream(buf);
+            if (in != null) {
+                in.close();
+            }
+            if (buf != null) {
+                buf.close();
+            }
+            return bMap;
+        } catch (Exception e) {
+            Log.e("Error reading file", e.toString());
+        }
+        return null;
+    }
+
+    private void saveImage(String urlPath, Bitmap bmp) {
+        try {
+            //Compress BMP to JPEG
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+
+            //Create File if not exists
+            File imageDir = new File(_context.getFilesDir() + "/images");
+            if(!imageDir.exists()) imageDir.mkdir();
+            File file = new File(imageDir.getPath() + urlPath);
+            file.createNewFile();
+
+            //Write Image to the File
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bytes.toByteArray());
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void SaveMovies(List<Movie> movies) {
@@ -103,10 +175,6 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
 
         List<Movie> movies = new ArrayList<>();
 
-        String[] sizes = new String[]{"w92", "w154", "w185", "w342", "w500", "w780", "original"};
-
-        final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/" + sizes[3] + "/";
-
         JSONObject response = new JSONObject(jsonString);
 
         JSONArray results = response.getJSONArray("results");
@@ -120,7 +188,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
             movie.original_title = movieJson.getString("original_title");
             movie.overview = movieJson.getString("overview");
             movie.release_date = DateTimeUtility.parseDate(movieJson.getString("release_date"));
-            movie.poster_url = BASE_IMAGE_URL + movieJson.getString("poster_path");
+            movie.poster_url = movieJson.getString("poster_path");
             movie.popularity = movieJson.getDouble("popularity");
             movie.title = movieJson.getString("title");
             movie.video = movieJson.getBoolean("video");

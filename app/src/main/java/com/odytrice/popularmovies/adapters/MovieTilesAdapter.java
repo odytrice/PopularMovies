@@ -2,6 +2,7 @@ package com.odytrice.popularmovies.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Environment;
 import android.text.style.LineHeightSpan;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +19,6 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class MovieTilesAdapter extends CursorAdapter {
-
-    private List<Movie> mMovies;
 
     public MovieTilesAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -41,8 +40,7 @@ public class MovieTilesAdapter extends CursorAdapter {
 
         //Get Movie at Position
         Picasso.with(context)
-                .load(movie.poster_url)
-                .placeholder(R.mipmap.loader)
+                .load("file://"+context.getFilesDir() + "/images" + movie.poster_url)
                 .error(R.mipmap.loader_error)
                 .fit()
                 .centerCrop()

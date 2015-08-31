@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.odytrice.popularmovies.R;
 import com.odytrice.popularmovies.activities.DetailActivity;
@@ -32,13 +33,12 @@ import com.odytrice.popularmovies.utils.PreferenceUtils;
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     MovieTilesAdapter _movieAdapter;
-    Setting _setting;
 
     int MOVIES_LOADER = 1;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(MOVIES_LOADER,null,this);
+        getLoaderManager().initLoader(MOVIES_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -46,25 +46,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        //Restore state if available
-        if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
-            //Initialize fields
-            _setting = new Setting(PreferenceUtils.getSortOrder(getActivity()));
-            fetchData();
-        } else {
-            _setting = savedInstanceState.getParcelable("setting");
-        }
-
         GridView gridView = (GridView) rootView.findViewById(R.id.movieTiles);
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             gridView.setNumColumns(4);
-        }
-        else {
+        } else {
             gridView.setNumColumns(2);
         }
 
 
-        _movieAdapter = new MovieTilesAdapter(getActivity(),null,0);
+        _movieAdapter = new MovieTilesAdapter(getActivity(), null, 0);
         gridView.setAdapter(_movieAdapter);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -83,35 +73,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        //If the user changes the sort order, you want to refresh the UI when the The MainActivity comes back to the foreground
-        if(_setting.sort_order != PreferenceUtils.getSortOrder(getActivity())){
-            refreshUI();
-        }
-    }
-
-    private void refreshUI() {
-        String sortOrder = PreferenceUtils.getSortOrder(getActivity());
-        Uri moviesUri = MoviesContract.MoviesEntry.getMoviesUri();
-        Cursor cursor = getActivity().getContentResolver().query(moviesUri, null , null, null, sortOrder + " DESC LIMIT 20");
-        _movieAdapter.swapCursor(cursor);
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable("setting", _setting);
         super.onSaveInstanceState(outState);
-    }
-
-    private void fetchData() {
-        FetchMoviesTask fetchTask = new FetchMoviesTask(getActivity(), new Action<Void>() {
-            @Override
-            public void Invoke(Void result) {
-                _setting.sort_order = PreferenceUtils.getSortOrder(getActivity());
-            }
-        });
-        fetchTask.execute();
     }
 
     @Override
@@ -120,7 +83,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         Uri moviesUri = MoviesContract.MoviesEntry.getMoviesUri();
 
-        return new CursorLoader(getActivity(), moviesUri, null , null, null, sortOrder + " DESC LIMIT 20");
+        return new CursorLoader(getActivity(), moviesUri, null, null, null, sortOrder + " DESC LIMIT 20");
     }
 
     @Override
@@ -131,5 +94,18 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         _movieAdapter.swapCursor(null);
+    }
+
+    public void onSettingChanged() {
+        //Fectch New Data and Refresh UI when Done
+        FetchMoviesTask fetchTask = new FetchMoviesTask(getActivity(), new Action<Void>() {
+            @Override
+            public void Invoke(Void result) {
+                Toast.makeText(getActivity(),"Refreshing UI",Toast.LENGTH_LONG);
+                getLoaderManager().restartLoader(MOVIES_LOADER, null, MainActivityFragment.this);
+            }
+        });
+        Toast.makeText(getActivity(),"Fetching Movie Data",Toast.LENGTH_LONG);
+        fetchTask.execute();
     }
 }

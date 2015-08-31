@@ -8,18 +8,37 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.odytrice.popularmovies.R;
+import com.odytrice.popularmovies.fragments.MainActivityFragment;
+import com.odytrice.popularmovies.utils.PreferenceUtils;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    private String mSortOrder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Instructs Android to Set Default Values if they did not exist
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        mSortOrder = PreferenceUtils.getSortOrder(this);
+
         setContentView(R.layout.activity_main);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //Check to see if Sort Order has changed
+        if(mSortOrder != PreferenceUtils.getSortOrder(this)){
+            //Notify Fragment that Sort Order has Changed
+            MainActivityFragment fragment = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.movies_fragment);
+            if(fragment != null){
+                fragment.onSettingChanged();
+            }
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
