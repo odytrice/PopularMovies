@@ -1,6 +1,7 @@
 package com.odytrice.popularmovies.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -8,13 +9,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.odytrice.popularmovies.R;
-import com.odytrice.popularmovies.fragments.MainActivityFragment;
+import com.odytrice.popularmovies.fragments.DetailFragment;
+import com.odytrice.popularmovies.fragments.MoviesFragment;
 import com.odytrice.popularmovies.utils.PreferenceUtils;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements MoviesFragment.CallBack {
 
     private String mSortOrder;
+    private boolean mTwoPane;
+    private static String DETAILFRAGMENT_TAG = "DetailFragment";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +29,15 @@ public class MainActivity extends ActionBarActivity {
 
         mSortOrder = PreferenceUtils.getSortOrder(this);
 
+        if (findViewById(R.id.movie_detail_container) == null) {
+            mTwoPane = true;
+            if (savedInstanceState == null)
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.movie_detail_container, new DetailFragment())
+                        .commit();
+        }
+
         setContentView(R.layout.activity_main);
     }
 
@@ -31,10 +45,10 @@ public class MainActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
         //Check to see if Sort Order has changed
-        if(mSortOrder != PreferenceUtils.getSortOrder(this)){
+        if (mSortOrder != PreferenceUtils.getSortOrder(this)) {
             //Notify Fragment that Sort Order has Changed
-            MainActivityFragment fragment = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.movies_fragment);
-            if(fragment != null){
+            MoviesFragment fragment = (MoviesFragment) getSupportFragmentManager().findFragmentById(R.id.movies_fragment);
+            if (fragment != null) {
                 fragment.onSettingChanged();
             }
         }
@@ -62,5 +76,23 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onMovieSelection(Uri movieUri) {
+        if (mTwoPane) {
+            Bundle args = new Bundle();
+            args.putParcelable(DetailFragment.DETAIL_URI, movieUri);
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(args);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.movie_detail_container,fragment,DETAILFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class);
+            intent.putExtra(DetailFragment.DETAIL_URI, movieUri);
+            startActivity(intent);
+        }
     }
 }

@@ -84,8 +84,15 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
             //Download Image File
             String[] sizes = new String[]{"w92", "w154", "w185", "w342", "w500", "w780", "original"};
             final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/" + sizes[index] + "/";
+
+            //Download Poster
             Bitmap image = downloadImage(BASE_IMAGE_URL + movie.poster_url);
             saveImage(movie.poster_url, image);
+
+
+            //Download Backdrop
+            Bitmap bdImage = downloadImage(BASE_IMAGE_URL + movie.backdrop_path);
+            saveImage(movie.poster_url, bdImage);
         }
     }
 
@@ -123,7 +130,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
 
             //Create File if not exists
             File imageDir = new File(_context.getFilesDir() + "/images");
-            if(!imageDir.exists()) imageDir.mkdir();
+            if (!imageDir.exists()) imageDir.mkdir();
             File file = new File(imageDir.getPath() + urlPath);
             file.createNewFile();
 
@@ -157,6 +164,9 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
         String movieApiUrl = "http://api.themoviedb.org/3/discover/movie";
 
         String sort_order = PreferenceUtils.getSortOrder(_context);
+
+        //Change Sort Popularity to Default if Favorite
+        if (sort_order == "favorite") sort_order = "popularity";
 
         Uri builtUri = Uri.parse(movieApiUrl).buildUpon()
                 .appendQueryParameter("sort_by", sort_order + ".desc")

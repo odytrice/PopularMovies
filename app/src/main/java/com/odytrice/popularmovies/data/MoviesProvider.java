@@ -63,7 +63,7 @@ public class MoviesProvider extends ContentProvider {
 
     private Cursor getMovie(Uri uri, String[] projection) {
 
-        String selection = Database.Movies._ID + " = ?";
+        String selection = Database.Movies.MovieID + " = ?";
 
         String[] selectionArgs = new String[]{uri.getLastPathSegment()};
 
@@ -95,7 +95,7 @@ public class MoviesProvider extends ContentProvider {
             case MOVIES: {
                 long _id = db.insert(MoviesContract.MoviesEntry.TABLE_NAME, null, values);
                 if (_id > 0)
-                    returnUri = MoviesContract.MoviesEntry.getMovieUri(_id);
+                    returnUri = MoviesContract.MoviesEntry.getMovieUri(values.getAsInteger(MoviesContract.MoviesEntry.Columns.MovieID));
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
@@ -140,7 +140,7 @@ public class MoviesProvider extends ContentProvider {
         int rowsAffected;
 
         //Only Allow Users to delete a single Entity at a Time
-        selection = Database.Movies._ID + " = ?";
+        selection = Database.Movies.MovieID + " = ?";
         selectionArgs = new String[]{uri.getLastPathSegment()};
 
         switch (uriMatcher.match(uri)) {

@@ -7,13 +7,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.odytrice.popularmovies.R;
+import com.odytrice.popularmovies.fragments.DetailFragment;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements DetailFragment.CallBack {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        if(savedInstanceState == null){
+            Bundle args = new Bundle();
+            args.putParcelable(DetailFragment.DETAIL_URI,getIntent().getData());
+
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.movie_detail_container,new DetailFragment()).commit();
+        }
     }
 
 

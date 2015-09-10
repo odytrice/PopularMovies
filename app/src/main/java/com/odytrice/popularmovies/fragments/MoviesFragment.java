@@ -1,6 +1,5 @@
 package com.odytrice.popularmovies.fragments;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
@@ -17,11 +16,9 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.odytrice.popularmovies.R;
-import com.odytrice.popularmovies.activities.DetailActivity;
 import com.odytrice.popularmovies.adapters.MovieTilesAdapter;
 import com.odytrice.popularmovies.data.MoviesContract;
 import com.odytrice.popularmovies.models.Movie;
-import com.odytrice.popularmovies.models.Setting;
 import com.odytrice.popularmovies.tasks.Action;
 import com.odytrice.popularmovies.tasks.FetchMoviesTask;
 import com.odytrice.popularmovies.utils.PreferenceUtils;
@@ -30,7 +27,7 @@ import com.odytrice.popularmovies.utils.PreferenceUtils;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     MovieTilesAdapter _movieAdapter;
 
@@ -44,11 +41,11 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
 
         GridView gridView = (GridView) rootView.findViewById(R.id.movieTiles);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            gridView.setNumColumns(4);
+            gridView.setNumColumns(3);
         } else {
             gridView.setNumColumns(2);
         }
@@ -62,9 +59,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 if (cursor != null) {
-                    Intent intent = new Intent(getActivity(), DetailActivity.class);
-                    intent.putExtra("Movie", new Movie(cursor));
-                    startActivity(intent);
+                    Movie movie = new Movie(cursor);
+                    Uri movieUri = MoviesContract.MoviesEntry.getMovieUri(movie.movie_id);
+                    ((CallBack) getActivity()).onMovieSelection(movieUri);
                 }
             }
         });
@@ -101,11 +98,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         FetchMoviesTask fetchTask = new FetchMoviesTask(getActivity(), new Action<Void>() {
             @Override
             public void Invoke(Void result) {
-                Toast.makeText(getActivity(),"Refreshing UI",Toast.LENGTH_LONG);
-                getLoaderManager().restartLoader(MOVIES_LOADER, null, MainActivityFragment.this);
+                Toast.makeText(getActivity(), "Refreshing UI", Toast.LENGTH_SHORT).show();
+                getLoaderManager().restartLoader(MOVIES_LOADER, null, MoviesFragment.this);
             }
         });
-        Toast.makeText(getActivity(),"Fetching Movie Data",Toast.LENGTH_LONG);
+        Toast.makeText(getActivity(), "Fetching Movie Data", Toast.LENGTH_LONG).show();
         fetchTask.execute();
+    }
+
+    public interface CallBack {
+        void onMovieSelection(Uri movieUri);
     }
 }
