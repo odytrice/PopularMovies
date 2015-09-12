@@ -23,7 +23,7 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(args);
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.movie_detail_container,new DetailFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.movie_detail_container,fragment).commit();
         }
     }
 

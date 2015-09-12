@@ -92,7 +92,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
 
             //Download Backdrop
             Bitmap bdImage = downloadImage(BASE_IMAGE_URL + movie.backdrop_path);
-            saveImage(movie.poster_url, bdImage);
+            saveImage(movie.backdrop_path, bdImage);
         }
     }
 

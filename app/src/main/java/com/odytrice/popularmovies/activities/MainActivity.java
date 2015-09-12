@@ -29,7 +29,7 @@ public class MainActivity extends ActionBarActivity implements MoviesFragment.Ca
 
         mSortOrder = PreferenceUtils.getSortOrder(this);
 
-        if (findViewById(R.id.movie_detail_container) == null) {
+        if (findViewById(R.id.movie_detail_container) != null) {
             mTwoPane = true;
             if (savedInstanceState == null)
                 getSupportFragmentManager()
@@ -91,7 +91,7 @@ public class MainActivity extends ActionBarActivity implements MoviesFragment.Ca
                     .commit();
         } else {
             Intent intent = new Intent(this, DetailActivity.class);
-            intent.putExtra(DetailFragment.DETAIL_URI, movieUri);
+            intent.setData(movieUri);
             startActivity(intent);
         }
     }
