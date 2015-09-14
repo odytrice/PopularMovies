@@ -45,7 +45,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
         GridView gridView = (GridView) rootView.findViewById(R.id.movieTiles);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            gridView.setNumColumns(3);
+            gridView.setNumColumns(4);
         } else {
             gridView.setNumColumns(2);
         }

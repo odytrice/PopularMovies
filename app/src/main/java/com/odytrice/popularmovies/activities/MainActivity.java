@@ -29,6 +29,8 @@ public class MainActivity extends ActionBarActivity implements MoviesFragment.Ca
 
         mSortOrder = PreferenceUtils.getSortOrder(this);
 
+        setContentView(R.layout.activity_main);
+
         if (findViewById(R.id.movie_detail_container) != null) {
             mTwoPane = true;
             if (savedInstanceState == null)
@@ -37,8 +39,6 @@ public class MainActivity extends ActionBarActivity implements MoviesFragment.Ca
                         .replace(R.id.movie_detail_container, new DetailFragment())
                         .commit();
         }
-
-        setContentView(R.layout.activity_main);
     }
 
     @Override

@@ -73,13 +73,21 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             ((TextView) mRootView.findViewById(R.id.txt_movie_release)).setText(releasedString);
             ((TextView) mRootView.findViewById(R.id.txt_movie_summary)).setText(movie.overview);
 
-            ImageView imageView = (ImageView) mRootView.findViewById(R.id.img_movie_poster);
+            ImageView posterImage = (ImageView) mRootView.findViewById(R.id.img_movie_poster);
             Picasso.with(getActivity())
                     .load("file://" + getActivity().getFilesDir() + "/images" + movie.poster_url)   //.placeholder(R.mipmap.loader)
                     .error(R.mipmap.loader_error)
                     .fit()
                     .centerCrop()
-                    .into(imageView);
+                    .into(posterImage);
+
+            ImageView backdropImage = (ImageView) mRootView.findViewById(R.id.img_backdrop);
+            Picasso.with(getActivity())
+                    .load("file://" + getActivity().getFilesDir() + "/images" + movie.backdrop_path)   //.placeholder(R.mipmap.loader)
+                    .error(R.mipmap.loader_error)
+                    .fit()
+                    .centerCrop()
+                    .into(backdropImage);
         }
     }
 

@@ -81,16 +81,15 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
 
     private void FetchImages(List<Movie> movies, int index) {
         for (Movie movie : movies) {
-            //Download Image File
-            String[] sizes = new String[]{"w92", "w154", "w185", "w342", "w500", "w780", "original"};
-            final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/" + sizes[index] + "/";
-
             //Download Poster
+            String[] sizes = new String[]{"w92", "w154", "w185", "w342", "w500", "w780", "original"};
+            String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/" + sizes[index] + "/";
             Bitmap image = downloadImage(BASE_IMAGE_URL + movie.poster_url);
             saveImage(movie.poster_url, image);
 
 
             //Download Backdrop
+            BASE_IMAGE_URL = "http://image.tmdb.org/t/p/" + sizes[5] + "/";
             Bitmap bdImage = downloadImage(BASE_IMAGE_URL + movie.backdrop_path);
             saveImage(movie.backdrop_path, bdImage);
         }
@@ -147,7 +146,6 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
     }
 
     private void SaveMovies(List<Movie> movies) {
-        //TODO: Save Movies to the Database
         Vector<ContentValues> cvVector = new Vector<>();
         for (Movie movie : movies) {
             cvVector.add(movie.toContentValues());
@@ -166,7 +164,7 @@ public class FetchMoviesTask extends AsyncTask<Void, Void, Void> {
         String sort_order = PreferenceUtils.getSortOrder(_context);
 
         //Change Sort Popularity to Default if Favorite
-        if (sort_order == "favorite") sort_order = "popularity";
+        if (sort_order.equals("favorite")) sort_order = "popularity";
 
         Uri builtUri = Uri.parse(movieApiUrl).buildUpon()
                 .appendQueryParameter("sort_by", sort_order + ".desc")
